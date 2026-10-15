@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login & Sign Up - LifeFlow Blood Donation System</title>
   <meta name="description" content="Sign in or register for LifeFlow Blood Donation System. Connect as a donor, hospital, or recipient.">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩸</text></svg>">
 </head>
 <body style="background: linear-gradient(135deg, #f8fafc 0%, #fee2e2 100%);">
@@ -172,8 +172,9 @@
     </div>
   </main>
 
-  <script src="js/data.js"></script>
-  <script src="js/auth.js"></script>
+  <script src="data.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
   <script>
     // Tab switching
     function switchAuthTab(mode) {
@@ -208,7 +209,7 @@
       const passField = document.getElementById('login-password');
 
       if (role === 'donor') {
-        emailField.value = 'arjun@example.com';
+        emailField.value = 'aryan@example.com';
         passField.value = 'password123';
       } else if (role === 'recipient') {
         emailField.value = 'priya@citycare.org';
@@ -228,12 +229,12 @@
     }
 
     // Submit Login
-    function handleLoginSubmit(e) {
+    async function handleLoginSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
       const pass = document.getElementById('login-password').value;
 
-      const res = Auth.login(email, pass);
+      const res = await Auth.login(email, pass);
       if (res.success) {
         showToast('Login successful! Welcome back, ' + res.user.name, 'success');
         setTimeout(() => {
@@ -245,7 +246,7 @@
     }
 
     // Submit Signup
-    function handleSignupSubmit(e) {
+    async function handleSignupSubmit(e) {
       e.preventDefault();
       const name = document.getElementById('signup-name').value;
       const email = document.getElementById('signup-email').value;
@@ -262,7 +263,7 @@
         return;
       }
 
-      const res = Auth.signup({
+      const res = await Auth.signup({
         name,
         email,
         password: pass,
@@ -274,8 +275,10 @@
       });
 
       if (res.success) {
-        alert('Registration successful! Welcome to LifeFlow, ' + res.user.name);
-        window.location.href = 'dashboard.html';
+        showToast('Registration successful! Welcome to LifeFlow, ' + res.user.name, 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 600);
       } else {
         alert(res.message);
       }

@@ -5,22 +5,38 @@
 const DEFAULT_USERS = [
   {
     id: "usr_1",
-    name: "Arjun Shukla",
-    email: "arjun@example.com",
+    name: "Aryan Singh",
+    email: "aryan@example.com",
     password: "password123",
     role: "donor",
     bloodGroup: "O+",
     phone: "+91 98765 43210",
     city: "New Delhi",
-    age: 24,
+    age: 23,
     gender: "Male",
-    donationsCount: 3,
+    donationsCount: 4,
     lastDonated: "2026-08-10",
     available: true,
     verified: true
   },
   {
     id: "usr_2",
+    name: "Arjun Shukla",
+    email: "arjun@example.com",
+    password: "password123",
+    role: "donor",
+    bloodGroup: "A+",
+    phone: "+91 98765 43211",
+    city: "New Delhi",
+    age: 24,
+    gender: "Male",
+    donationsCount: 3,
+    lastDonated: "2026-07-15",
+    available: true,
+    verified: true
+  },
+  {
+    id: "usr_3",
     name: "Dr. Priya Sharma",
     email: "priya@citycare.org",
     password: "password123",
@@ -32,8 +48,8 @@ const DEFAULT_USERS = [
     verified: true
   },
   {
-    id: "usr_3",
-    name: "Admin Officer",
+    id: "usr_4",
+    name: "Admin Coordinator",
     email: "admin@lifeflow.org",
     password: "admin123",
     role: "admin",
@@ -47,15 +63,15 @@ const DEFAULT_USERS = [
 const DEFAULT_DONORS = [
   {
     id: "don_1",
-    name: "Arjun Shukla",
+    name: "Aryan Singh",
     bloodGroup: "O+",
     city: "New Delhi",
     area: "Connaught Place",
     phone: "+91 98765 43210",
-    email: "arjun@example.com",
-    age: 24,
+    email: "aryan@example.com",
+    age: 23,
     gender: "Male",
-    donations: 3,
+    donations: 4,
     lastDonation: "2026-08-10",
     available: true,
     verified: true
@@ -175,7 +191,7 @@ const DEFAULT_REQUESTS = [
     units: 2,
     hospital: "AIIMS Trauma Centre",
     city: "New Delhi",
-    urgency: "critical", // critical, urgent, standard
+    urgency: "critical",
     contactPerson: "Dr. Sunil Gupta",
     phone: "+91 98123 45678",
     reason: "Emergency surgical operation after road accident",

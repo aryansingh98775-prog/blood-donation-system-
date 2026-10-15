@@ -1,30 +1,11 @@
 // ========================================================
 // LifeFlow Blood Donation System - Main Application Logic
-// Hybrid Backend REST API + LocalStorage Fallback
+// Dual Engine: Local Python/Node REST API + GitHub Pages LocalStorage
 // ========================================================
 
-// Toast Notification
-function showToast(message, type = 'info') {
-  let container = document.getElementById('toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toast-container';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
-  toast.innerHTML = `<span>${icon}</span> <div>${message}</div>`;
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(10px)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  }, 3500);
+function isLocalServer() {
+  return typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 }
 
 // Copy to clipboard helper
@@ -55,32 +36,36 @@ function setupMobileNav() {
 // Donors Directory
 // ========================================================
 async function fetchDonorsData(blood = 'all', city = '', avail = false) {
-  // 1. Try server API
-  try {
-    let url = `/api/donors?bloodGroup=${encodeURIComponent(blood)}`;
-    if (city) url += `&city=${encodeURIComponent(city)}`;
-    if (avail) url += `&available=true`;
-    
-    const res = await fetch(url);
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.data) {
-        return json.data;
+  // If local server is running, query API
+  if (isLocalServer()) {
+    try {
+      let url = `/api/donors?bloodGroup=${encodeURIComponent(blood)}`;
+      if (city) url += `&city=${encodeURIComponent(city)}`;
+      if (avail) url += `&available=true`;
+      
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          return json.data;
+        }
       }
-    }
-  } catch (err) {
-    // API server offline, proceed to localStorage
+    } catch (err) {}
   }
 
-  // 2. LocalStorage Fallback
+  // GitHub Pages / Client-side Data
   let donors = JSON.parse(localStorage.getItem('lifeflow_donors') || '[]');
+  if (!donors || donors.length === 0) {
+    donors = typeof DEFAULT_DONORS !== 'undefined' ? DEFAULT_DONORS : [];
+  }
+
   if (blood !== 'all') {
     donors = donors.filter(d => d.bloodGroup === blood);
   }
   if (city) {
     const query = city.toLowerCase();
     donors = donors.filter(d => 
-      d.city.toLowerCase().includes(query) || 
+      (d.city && d.city.toLowerCase().includes(query)) || 
       (d.area && d.area.toLowerCase().includes(query))
     );
   }
@@ -173,7 +158,7 @@ function requestDonorDirect(donorId, donorName, bloodGroup) {
   const modal = document.getElementById('request-blood-modal');
   if (modal) {
     document.getElementById('req-blood-group').value = bloodGroup;
-    document.getElementById('req-reason').value = `Direct request for donor ${donorName}`;
+    document.getElementById('req-reason').value = `Direct emergency request for donor ${donorName}`;
     modal.classList.add('active');
   } else {
     alert(`Please reach out to ${donorName} (${bloodGroup}) using the call button or submit an emergency request form.`);
@@ -184,19 +169,21 @@ function requestDonorDirect(donorId, donorName, bloodGroup) {
 // Emergency Blood Requests Board
 // ========================================================
 async function fetchRequestsData() {
-  // Try server API
-  try {
-    const res = await fetch('/api/requests');
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.data) return json.data;
-    }
-  } catch (err) {
-    // API server offline
+  if (isLocalServer()) {
+    try {
+      const res = await fetch('/api/requests');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) return json.data;
+      }
+    } catch (err) {}
   }
 
-  // Fallback
-  return JSON.parse(localStorage.getItem('lifeflow_requests') || '[]');
+  let requests = JSON.parse(localStorage.getItem('lifeflow_requests') || '[]');
+  if (!requests || requests.length === 0) {
+    requests = typeof DEFAULT_REQUESTS !== 'undefined' ? DEFAULT_REQUESTS : [];
+  }
+  return requests;
 }
 
 async function renderRequests() {
@@ -279,22 +266,16 @@ async function handleAddRequest(e) {
     reason
   };
 
-  // Try API first
-  let postedToApi = false;
-  try {
-    const res = await fetch('/api/requests', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) {
-      postedToApi = true;
-    }
-  } catch (err) {
-    // API offline
+  if (isLocalServer()) {
+    try {
+      await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {}
   }
 
-  // Always keep localStorage updated as well
   const requests = JSON.parse(localStorage.getItem('lifeflow_requests') || '[]');
   const newReq = {
     ...payload,
@@ -308,7 +289,7 @@ async function handleAddRequest(e) {
   await renderRequests();
   closeModal('request-blood-modal');
   form.reset();
-  showToast('Emergency request broadcasted successfully' + (postedToApi ? ' to Server Database!' : '!'), 'success');
+  showToast('Emergency blood request broadcasted successfully!', 'success');
 }
 
 // ========================================================
@@ -326,7 +307,6 @@ function setupCompatibility() {
     });
   });
 
-  // Default display O-
   renderCompatibility('O-');
 }
 
@@ -374,14 +354,20 @@ function renderCompatibility(bloodType) {
 // Blood Donation Camps
 // ========================================================
 async function fetchCampsData() {
-  try {
-    const res = await fetch('/api/camps');
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.data) return json.data;
-    }
-  } catch (err) {}
-  return JSON.parse(localStorage.getItem('lifeflow_camps') || '[]');
+  if (isLocalServer()) {
+    try {
+      const res = await fetch('/api/camps');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) return json.data;
+      }
+    } catch (err) {}
+  }
+  let camps = JSON.parse(localStorage.getItem('lifeflow_camps') || '[]');
+  if (!camps || camps.length === 0) {
+    camps = typeof DEFAULT_CAMPS !== 'undefined' ? DEFAULT_CAMPS : [];
+  }
+  return camps;
 }
 
 async function renderCamps() {
@@ -412,9 +398,11 @@ async function renderCamps() {
 }
 
 async function registerForCamp(campId) {
-  try {
-    await fetch(`/api/camps/${campId}/register`, { method: 'POST' });
-  } catch (err) {}
+  if (isLocalServer()) {
+    try {
+      await fetch(`/api/camps/${campId}/register`, { method: 'POST' });
+    } catch (err) {}
+  }
 
   const camps = JSON.parse(localStorage.getItem('lifeflow_camps') || '[]');
   const camp = camps.find(c => c.id === campId);

@@ -1,9 +1,38 @@
 // ==========================================
 // LifeFlow Authentication & Session Management
-// Hybrid: Direct Backend REST API + LocalStorage Fallback
+// Works seamlessly on GitHub Pages (localStorage) and Local Python/Node Server (REST API)
 // ==========================================
 
+// Global Toast Notification Helper
+function showToast(message, type = 'info') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
+  toast.innerHTML = `<span>${icon}</span> <div>${message}</div>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
 const Auth = {
+  isLocalServer() {
+    return typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  },
+
   getCurrentUser() {
     const raw = localStorage.getItem("lifeflow_session");
     if (!raw) return null;
@@ -16,41 +45,48 @@ const Auth = {
 
   getUsers() {
     const raw = localStorage.getItem("lifeflow_users");
-    return raw ? JSON.parse(raw) : (typeof DEFAULT_USERS !== 'undefined' ? DEFAULT_USERS : []);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return (typeof DEFAULT_USERS !== 'undefined') ? DEFAULT_USERS : [];
   },
 
   async login(email, password) {
-    // 1. Try Backend REST API
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.user) {
-          localStorage.setItem("lifeflow_session", JSON.stringify(data.user));
-          return { success: true, user: data.user, source: 'api' };
+    const cleanEmail = email.trim().toLowerCase();
+
+    // 1. If running on local server, try backend API
+    if (this.isLocalServer()) {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail, password })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.user) {
+            localStorage.setItem("lifeflow_session", JSON.stringify(data.user));
+            return { success: true, user: data.user, source: 'api' };
+          }
         }
-      } else if (res.status === 401 || res.status === 404) {
-        const errData = await res.json();
-        return { success: false, message: errData.message || "Invalid credentials." };
+      } catch (err) {
+        // Fall through to localStorage
       }
-    } catch (err) {
-      // Backend not running or static file protocol, gracefully fallback
     }
 
-    // 2. LocalStorage Fallback
+    // 2. Direct Client-side / GitHub Pages Fallback
     const users = this.getUsers();
-    const user = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    const user = users.find(u => u.email.toLowerCase() === cleanEmail);
 
     if (!user) {
-      return { success: false, message: "No account found with this email. Please register!" };
+      return { success: false, message: "No account found with this email. Please click 'Register New Account'!" };
     }
 
     if (user.password !== password) {
-      return { success: false, message: "Incorrect password. Please try again." };
+      return { success: false, message: "Incorrect password. (Hint: Demo password is 'password123')" };
     }
 
     localStorage.setItem("lifeflow_session", JSON.stringify(user));
@@ -58,29 +94,31 @@ const Auth = {
   },
 
   async signup(data) {
-    // 1. Try Backend REST API
-    try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        const result = await res.json();
-        if (result.success && result.user) {
-          localStorage.setItem("lifeflow_session", JSON.stringify(result.user));
-          return { success: true, user: result.user, source: 'api' };
+    const cleanEmail = data.email.trim().toLowerCase();
+
+    // 1. If local server, try backend API
+    if (this.isLocalServer()) {
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success && result.user) {
+            localStorage.setItem("lifeflow_session", JSON.stringify(result.user));
+            return { success: true, user: result.user, source: 'api' };
+          }
         }
-      } else if (res.status === 409) {
-        return { success: false, message: "An account with this email already exists." };
+      } catch (err) {
+        // Fall through
       }
-    } catch (err) {
-      // Backend not running, gracefully fallback
     }
 
-    // 2. LocalStorage Fallback
+    // 2. Direct Client-side / GitHub Pages Fallback
     const users = this.getUsers();
-    const existing = users.find(u => u.email.toLowerCase() === data.email.trim().toLowerCase());
+    const existing = users.find(u => u.email.toLowerCase() === cleanEmail);
 
     if (existing) {
       return { success: false, message: "An account with this email already exists." };
@@ -89,16 +127,16 @@ const Auth = {
     const newUser = {
       id: "usr_" + Date.now(),
       name: data.name.trim(),
-      email: data.email.trim().toLowerCase(),
+      email: cleanEmail,
       password: data.password,
       role: data.role || "donor",
       bloodGroup: data.bloodGroup || "O+",
-      phone: data.phone || "",
-      city: data.city || "",
-      age: data.age ? parseInt(data.age) : 25,
+      phone: data.phone || "+91 98765 43210",
+      city: data.city || "New Delhi",
+      age: data.age ? parseInt(data.age) : 24,
       gender: data.gender || "Not specified",
-      donationsCount: 0,
-      lastDonated: "Never",
+      donationsCount: data.role === 'donor' ? 1 : 0,
+      lastDonated: "Recent",
       available: true,
       verified: true
     };
@@ -118,8 +156,8 @@ const Auth = {
         email: newUser.email,
         age: newUser.age,
         gender: newUser.gender,
-        donations: 0,
-        lastDonation: "Never",
+        donations: 1,
+        lastDonation: "Recent",
         available: true,
         verified: true
       });
@@ -137,7 +175,7 @@ const Auth = {
 
   quickDemoLogin(role) {
     const users = this.getUsers();
-    const match = users.find(u => u.role === role);
+    const match = users.find(u => u.role === role) || users[0];
     if (match) {
       localStorage.setItem("lifeflow_session", JSON.stringify(match));
       return { success: true, user: match };
