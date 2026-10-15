@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Sign Up - LifeFlow Blood Donation System</title>
+  <meta name="description" content="Sign in or register for LifeFlow Blood Donation System. Connect as a donor, hospital, or recipient.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩸</text></svg>">
+</head>
+<body style="background: linear-gradient(135deg, #f8fafc 0%, #fee2e2 100%);">
+
+  <!-- Top bar -->
+  <header class="navbar" style="border-bottom: 1px solid rgba(0,0,0,0.06);">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="brand-icon">🩸</span>
+        <span>Life<span class="brand-accent">Flow</span></span>
+      </a>
+
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-outline btn-sm">← Back to Home</a>
+        <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+          🐙 GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <span style="font-size: 2.25rem;">🩸</span>
+        <h1 id="auth-title">Welcome to LifeFlow</h1>
+        <p id="auth-subtitle">Join the mission to save lives through voluntary blood donation</p>
+      </div>
+
+      <!-- Quick Demo Login Buttons -->
+      <div class="demo-logins-box">
+        <p>⚡ Quick Demo Auto-Fill (1-Click Test)</p>
+        <div class="demo-buttons-row">
+          <button type="button" onclick="fillDemo('donor')" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
+            🩸 Donor Login
+          </button>
+          <button type="button" onclick="fillDemo('recipient')" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
+            🏥 Recipient Login
+          </button>
+          <button type="button" onclick="fillDemo('admin')" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
+            🛡️ Admin Login
+          </button>
+        </div>
+      </div>
+
+      <!-- Toggle Tabs -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-login-btn" onclick="switchAuthTab('login')">
+          Sign In
+        </button>
+        <button type="button" class="auth-tab-btn" id="tab-signup-btn" onclick="switchAuthTab('signup')">
+          Register New Account
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" required class="form-control" placeholder="name@example.com" value="arjun@example.com">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="login-password">Password</label>
+            <a href="javascript:void(0)" onclick="showToast('Password reset link has been dispatched to your email.', 'info')" style="font-size: 0.8rem; color: var(--primary);">Forgot?</a>
+          </div>
+          <input type="password" id="login-password" required class="form-control" placeholder="••••••••" value="password123">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
+          Sign In to Dashboard
+        </button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" onsubmit="handleSignupSubmit(event)" style="display: none;">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label>I want to register as *</label>
+          <select id="signup-role" class="form-control" onchange="toggleRoleFields(this.value)">
+            <option value="donor">🩸 Voluntary Blood Donor</option>
+            <option value="recipient">🏥 Patient / Hospital Recipient</option>
+            <option value="admin">🛡️ Blood Bank Coordinator / Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="signup-name">Full Name *</label>
+          <input type="text" id="signup-name" required class="form-control" placeholder="e.g. Rahul Sharma">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="signup-email">Email Address *</label>
+          <input type="email" id="signup-email" required class="form-control" placeholder="rahul@example.com">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label for="signup-password">Password *</label>
+            <input type="password" id="signup-password" required minlength="6" class="form-control" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label for="signup-confirm-password">Confirm *</label>
+            <input type="password" id="signup-confirm-password" required minlength="6" class="form-control" placeholder="••••••••">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label for="signup-blood">Blood Group *</label>
+            <select id="signup-blood" class="form-control">
+              <option value="O+">O+ (O Positive)</option>
+              <option value="O-">O- (O Negative)</option>
+              <option value="A+">A+ (A Positive)</option>
+              <option value="A-">A- (A Negative)</option>
+              <option value="B+">B+ (B Positive)</option>
+              <option value="B-">B- (B Negative)</option>
+              <option value="AB+">AB+ (AB Positive)</option>
+              <option value="AB-">AB- (AB Negative)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-city">City / District *</label>
+            <input type="text" id="signup-city" required class="form-control" placeholder="e.g. New Delhi">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label for="signup-phone">Phone Number *</label>
+            <input type="tel" id="signup-phone" required class="form-control" placeholder="+91 98765 43210">
+          </div>
+
+          <div class="form-group">
+            <label for="signup-age">Age *</label>
+            <input type="number" id="signup-age" min="18" max="65" value="23" required class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 0.825rem; color: var(--slate-600); cursor: pointer;">
+            <input type="checkbox" required style="margin-top: 3px; accent-color: var(--primary);">
+            <span>I declare that I am medically fit, and the information supplied is true and accurate.</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
+          Complete Registration
+        </button>
+      </form>
+
+      <!-- Useful Links Footer in Card -->
+      <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--slate-200); text-align: center; font-size: 0.825rem; color: var(--slate-500);">
+        <p>Protected by LifeFlow Healthcare Protocols.</p>
+        <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1rem;">
+          <a href="index.html" style="color: var(--primary); font-weight: 600;">Home</a>
+          <span>·</span>
+          <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer" style="color: var(--slate-700);">GitHub Project</a>
+          <span>·</span>
+          <a href="dashboard.html" style="color: var(--slate-700);">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Tab switching
+    function switchAuthTab(mode) {
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      const tabLoginBtn = document.getElementById('tab-login-btn');
+      const tabSignupBtn = document.getElementById('tab-signup-btn');
+      const title = document.getElementById('auth-title');
+      const subtitle = document.getElementById('auth-subtitle');
+
+      if (mode === 'signup') {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        tabLoginBtn.classList.remove('active');
+        tabSignupBtn.classList.add('active');
+        title.innerText = 'Create an Account';
+        subtitle.innerText = 'Register as a donor, hospital representative, or recipient';
+      } else {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        tabLoginBtn.classList.add('active');
+        tabSignupBtn.classList.remove('active');
+        title.innerText = 'Welcome Back';
+        subtitle.innerText = 'Sign in to access your donation dashboard and requests';
+      }
+    }
+
+    // Demo Fill
+    function fillDemo(role) {
+      switchAuthTab('login');
+      const emailField = document.getElementById('login-email');
+      const passField = document.getElementById('login-password');
+
+      if (role === 'donor') {
+        emailField.value = 'arjun@example.com';
+        passField.value = 'password123';
+      } else if (role === 'recipient') {
+        emailField.value = 'priya@citycare.org';
+        passField.value = 'password123';
+      } else if (role === 'admin') {
+        emailField.value = 'admin@lifeflow.org';
+        passField.value = 'admin123';
+      }
+      
+      const res = Auth.quickDemoLogin(role);
+      if (res.success) {
+        showToast(`Signed in as ${res.user.name} (${res.user.role.toUpperCase()})! Redirecting...`, 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 800);
+      }
+    }
+
+    // Submit Login
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+
+      const res = Auth.login(email, pass);
+      if (res.success) {
+        showToast('Login successful! Welcome back, ' + res.user.name, 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 600);
+      } else {
+        alert(res.message);
+      }
+    }
+
+    // Submit Signup
+    function handleSignupSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const pass = document.getElementById('signup-password').value;
+      const confirmPass = document.getElementById('signup-confirm-password').value;
+      const role = document.getElementById('signup-role').value;
+      const bloodGroup = document.getElementById('signup-blood').value;
+      const city = document.getElementById('signup-city').value;
+      const phone = document.getElementById('signup-phone').value;
+      const age = document.getElementById('signup-age').value;
+
+      if (pass !== confirmPass) {
+        alert('Passwords do not match!');
+        return;
+      }
+
+      const res = Auth.signup({
+        name,
+        email,
+        password: pass,
+        role,
+        bloodGroup,
+        city,
+        phone,
+        age
+      });
+
+      if (res.success) {
+        alert('Registration successful! Welcome to LifeFlow, ' + res.user.name);
+        window.location.href = 'dashboard.html';
+      } else {
+        alert(res.message);
+      }
+    }
+
+    // Check URL params on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode');
+      const role = params.get('role');
+
+      if (mode === 'signup') {
+        switchAuthTab('signup');
+      }
+      if (role && document.getElementById('signup-role')) {
+        document.getElementById('signup-role').value = role;
+      }
+
+      // Check if already logged in
+      const currentUser = Auth.getCurrentUser();
+      if (currentUser && !mode) {
+        // Redirect to dashboard if logged in
+        // window.location.href = 'dashboard.html';
+      }
+    });
+  </script>
+</body>
+</html>

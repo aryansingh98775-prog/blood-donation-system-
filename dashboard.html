@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Dashboard - LifeFlow Blood Donation System</title>
+  <meta name="description" content="Manage your blood donor profile, view digital donor card, review emergency requests and donation history.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩸</text></svg>">
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printable-donor-card, #printable-donor-card * { visibility: visible; }
+      #printable-donor-card { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <aside class="top-notice-bar">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span class="notice-pill">Member Portal</span>
+      <span>LifeFlow Donor & Recipient Control Dashboard</span>
+    </div>
+    <div class="top-links">
+      <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer" class="top-link-item">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub Repository
+      </a>
+      <a href="index.html" class="top-link-item">🌐 Back to Website</a>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="brand-icon">🩸</span>
+        <span>Life<span class="brand-accent">Flow</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="index.html#search-section" class="nav-link">Find Donors</a></li>
+          <li><a href="index.html#requests-section" class="nav-link">Emergency Requests</a></li>
+          <li><a href="index.html#camps-section" class="nav-link">Camps</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button onclick="handleLogout()" class="btn btn-outline btn-sm text-danger">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container" id="dashboard-content">
+      <!-- Dynamic Dashboard loaded via script -->
+      <div style="text-align: center; padding: 4rem;">
+        <p>Loading dashboard details...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom" style="border: none; padding-top: 0;">
+      <p>&copy; 2026 LifeFlow Blood Donation Management System. Open Source.</p>
+      <div style="display: flex; gap: 1rem;">
+        <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer">GitHub Project</a>
+        <a href="index.html">Main Website</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      let user = Auth.getCurrentUser();
+      
+      // If not logged in, auto set default demo user so user can inspect immediately
+      if (!user) {
+        Auth.quickDemoLogin('donor');
+        user = Auth.getCurrentUser();
+      }
+
+      renderDashboard(user);
+    });
+
+    function renderDashboard(user) {
+      const container = document.getElementById("dashboard-content");
+      const isDonor = user.role === 'donor';
+
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+          <div>
+            <span class="section-tag">${user.role.toUpperCase()} ACCOUNT</span>
+            <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--dark);">${user.name}</h1>
+            <p style="color: var(--slate-500); font-size: 0.95rem;">
+              📧 ${user.email} · 📍 ${user.city || 'India'} · 📞 ${user.phone || 'Not set'}
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button onclick="window.print()" class="btn btn-outline">
+              🖨️ Print Donor Card
+            </button>
+            <a href="index.html#requests-section" class="btn btn-primary">
+              🚨 View Urgent Requests
+            </a>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem; align-items: start;">
+          <!-- Left Column: Donor ID Card & Status -->
+          <div>
+            <div style="margin-bottom: 1.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 750; color: var(--dark); margin-bottom: 1rem;">
+                Official Digital Donor Card
+              </h3>
+              
+              <!-- Digital Card -->
+              <div class="donor-card-badge-preview" id="printable-donor-card">
+                <div class="card-watermark">🩸</div>
+                <div class="donor-card-top">
+                  <div class="donor-card-logo">
+                    <span>🩸</span> LIFEFLOW DONOR ID
+                  </div>
+                  <div class="donor-card-blood">
+                    ${user.bloodGroup || 'O+'}
+                  </div>
+                </div>
+
+                <div class="donor-card-body">
+                  <h3>${user.name}</h3>
+                  <p style="opacity: 0.85; font-size: 0.85rem;">Member ID: <strong>LF-${user.id ? user.id.slice(-6).toUpperCase() : '849201'}</strong></p>
+                </div>
+
+                <div class="donor-card-meta">
+                  <div>
+                    <div style="opacity: 0.75; font-size: 0.75rem;">LOCATION:</div>
+                    <div style="font-weight: 700;">${user.city || 'National'}</div>
+                  </div>
+                  <div>
+                    <div style="opacity: 0.75; font-size: 0.75rem;">DONATIONS:</div>
+                    <div style="font-weight: 700;">${user.donationsCount || 3} Times Given</div>
+                  </div>
+                  <div>
+                    <div style="opacity: 0.75; font-size: 0.75rem;">STATUS:</div>
+                    <div style="font-weight: 700;">VERIFIED LIFE SAVER</div>
+                  </div>
+                  <div>
+                    <div style="opacity: 0.75; font-size: 0.75rem;">LAST DONATED:</div>
+                    <div style="font-weight: 700;">${user.lastDonated || 'Aug 2026'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Availability Toggle Widget -->
+            <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); margin-bottom: 1.5rem;">
+              <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">
+                Emergency Availability Status
+              </h4>
+              <p style="font-size: 0.875rem; color: var(--slate-500); margin-bottom: 1rem;">
+                When turned on, your contact number and blood group will appear in public emergency donor search results.
+              </p>
+
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
+                <input type="checkbox" id="avail-toggle" ${user.available !== false ? 'checked' : ''} onchange="toggleDonorAvailability(this.checked)" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                <span id="avail-label">${user.available !== false ? 'Available to Donate Now (Visible)' : 'Unavailable / On Rest Period'}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Right Column: Stats & Recent Activity -->
+          <div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+              <div style="background: white; border: 1px solid var(--slate-200); padding: 1.25rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--primary);">${user.donationsCount || 3}</div>
+                <div style="font-size: 0.85rem; color: var(--slate-500); font-weight: 600;">Total Donations</div>
+              </div>
+
+              <div style="background: white; border: 1px solid var(--slate-200); padding: 1.25rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--success);">100%</div>
+                <div style="font-size: 0.85rem; color: var(--slate-500); font-weight: 600;">Clinical Health Score</div>
+              </div>
+            </div>
+
+            <!-- Health Badges -->
+            <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); margin-bottom: 1.5rem;">
+              <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--dark);">
+                Achievements & Badges
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 0.75rem; background: var(--slate-50); border-radius: var(--radius-md);">
+                  <span style="font-size: 1.5rem;">🎖️</span>
+                  <div>
+                    <strong style="display: block; font-size: 0.9rem;">Life Protector Tier</strong>
+                    <span style="font-size: 0.8rem; color: var(--slate-500);">Completed over 3 voluntary blood donations</span>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 12px; padding: 0.75rem; background: var(--slate-50); border-radius: var(--radius-md);">
+                  <span style="font-size: 1.5rem;">⚡</span>
+                  <div>
+                    <strong style="display: block; font-size: 0.9rem;">Rapid Emergency Responder</strong>
+                    <span style="font-size: 0.8rem; color: var(--slate-500);">Responded to critical requests within 30 minutes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div style="background: var(--dark); color: white; border-radius: var(--radius-lg); padding: 1.5rem;">
+              <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">
+                Need to broadcast an urgent request?
+              </h4>
+              <p style="font-size: 0.85rem; color: var(--slate-400); margin-bottom: 1rem;">
+                Submit patient details directly to reach thousands of potential donors.
+              </p>
+              <a href="index.html#requests-section" class="btn btn-primary btn-sm" style="width: 100%;">
+                Go to Emergency Board
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleDonorAvailability(isAvail) {
+      const user = Auth.getCurrentUser();
+      if (!user) return;
+      user.available = isAvail;
+      localStorage.setItem("lifeflow_session", JSON.stringify(user));
+
+      // Also update in donors list
+      const donors = JSON.parse(localStorage.getItem("lifeflow_donors") || "[]");
+      const match = donors.find(d => d.email === user.email || d.name === user.name);
+      if (match) {
+        match.available = isAvail;
+        localStorage.setItem("lifeflow_donors", JSON.stringify(donors));
+      }
+
+      document.getElementById('avail-label').innerText = isAvail 
+        ? 'Available to Donate Now (Visible)' 
+        : 'Unavailable / On Rest Period';
+      
+      showToast(isAvail ? 'Your profile is now live for emergency requests!' : 'Availability set to resting.', 'info');
+    }
+  </script>
+</body>
+</html>

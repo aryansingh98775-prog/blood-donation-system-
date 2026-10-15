@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeFlow - Blood Donation Management System</title>
+  <meta name="description" content="LifeFlow connects voluntary blood donors with patients and hospitals in real-time. Find donors, post emergency blood requests, check compatibility, and save lives.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩸</text></svg>">
+</head>
+<body>
+
+  <!-- Top Info & Repository Links Bar -->
+  <aside class="top-notice-bar" aria-label="Announcement & Links">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span class="notice-pill">24x7 Helpline</span>
+      <span>National Blood Emergency Support: <strong>1800-11-4567</strong></span>
+    </div>
+    <div class="top-links">
+      <button onclick="openModal('share-links-modal')" class="top-link-item" style="background: none; border: none; cursor: pointer;">
+        <span>🔗</span> <strong>Website & GitHub Links</strong>
+      </button>
+      <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer" class="top-link-item">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub Repository
+      </a>
+      <a href="dashboard.html" class="top-link-item">
+        <span>👤</span> Member Portal
+      </a>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="brand-icon">🩸</span>
+        <span>Life<span class="brand-accent">Flow</span></span>
+      </a>
+
+      <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#search-section" class="nav-link">Find Donors</a></li>
+          <li><a href="#requests-section" class="nav-link">Blood Requests</a></li>
+          <li><a href="#compatibility-section" class="nav-link">Compatibility</a></li>
+          <li><a href="#camps-section" class="nav-link">Donation Drives</a></li>
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions" id="nav-auth-container">
+        <!-- Rendered dynamically by auth.js -->
+        <a href="auth.html?mode=login" class="btn btn-outline btn-sm">Sign In</a>
+        <a href="auth.html?mode=signup" class="btn btn-primary btn-sm">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-glow"></div>
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <span>❤️</span> Every Drop Counts · Save Lives Today
+          </div>
+          <h1 class="hero-title">
+            Connect Donors with <br><span>Urgent Blood</span> Needs.
+          </h1>
+          <p class="hero-subtitle">
+            A digital healthcare lifeline bridging compassionate donors, emergency patients, and blood banks across cities in real-time.
+          </p>
+
+          <div class="hero-actions">
+            <a href="auth.html?mode=signup&role=donor" class="btn btn-primary btn-lg">
+              <span>🩸</span> Become a Blood Donor
+            </a>
+            <button onclick="openModal('request-blood-modal')" class="btn btn-dark btn-lg">
+              <span>🚨</span> Request Emergency Blood
+            </button>
+            <button onclick="openModal('eligibility-modal')" class="btn btn-outline btn-lg">
+              <span>📋</span> Check Eligibility
+            </button>
+          </div>
+
+          <div class="hero-stats-row">
+            <div class="stat-item">
+              <h3>12,500+</h3>
+              <p>Lives Touched</p>
+            </div>
+            <div class="stat-item">
+              <h3>8,400+</h3>
+              <p>Verified Donors</p>
+            </div>
+            <div class="stat-item">
+              <h3>100% Free</h3>
+              <p>Voluntary Network</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Card / Live Blood Inventory -->
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--dark);">Live Blood Bank Status</h3>
+              <p style="font-size: 0.8rem; color: var(--slate-500);">Current stock availability across regional banks</p>
+            </div>
+            <div class="pulse-indicator">
+              <span class="pulse-dot"></span> Live
+            </div>
+          </div>
+
+          <div class="blood-inventory-grid">
+            <div class="inventory-pill">
+              <div class="inventory-blood">A+</div>
+              <div class="inventory-units">42 Units (Stable)</div>
+            </div>
+            <div class="inventory-pill" style="border-color: #fca5a5; background: #fff5f5;">
+              <div class="inventory-blood">O-</div>
+              <div class="inventory-units" style="color: var(--primary); font-weight: 700;">4 Units (CRITICAL)</div>
+            </div>
+            <div class="inventory-pill">
+              <div class="inventory-blood">B+</div>
+              <div class="inventory-units">38 Units (Stable)</div>
+            </div>
+            <div class="inventory-pill" style="border-color: #fca5a5; background: #fff5f5;">
+              <div class="inventory-blood">AB-</div>
+              <div class="inventory-units" style="color: var(--primary); font-weight: 700;">6 Units (LOW)</div>
+            </div>
+            <div class="inventory-pill">
+              <div class="inventory-blood">O+</div>
+              <div class="inventory-units">55 Units (Safe)</div>
+            </div>
+            <div class="inventory-pill">
+              <div class="inventory-blood">A-</div>
+              <div class="inventory-units">14 Units (Normal)</div>
+            </div>
+            <div class="inventory-pill">
+              <div class="inventory-blood">B-</div>
+              <div class="inventory-units">11 Units (Normal)</div>
+            </div>
+            <div class="inventory-pill">
+              <div class="inventory-blood">AB+</div>
+              <div class="inventory-units">27 Units (Safe)</div>
+            </div>
+          </div>
+
+          <div style="background: var(--slate-50); border-radius: var(--radius-md); padding: 0.85rem; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+            <span>Need an urgent transfusion right now?</span>
+            <button onclick="openModal('request-blood-modal')" class="btn btn-primary btn-sm">Post Request</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search & Filter Donors Section -->
+    <section class="section" id="search-section">
+      <div class="container">
+        <!-- Floating Filter Card -->
+        <div class="search-card">
+          <div class="filter-form-grid">
+            <div class="form-group">
+              <label for="filter-blood">Blood Group Needed</label>
+              <select id="filter-blood" class="form-control">
+                <option value="all">All Blood Groups</option>
+                <option value="A+">A+ (A Positive)</option>
+                <option value="A-">A- (A Negative)</option>
+                <option value="B+">B+ (B Positive)</option>
+                <option value="B-">B- (B Negative)</option>
+                <option value="AB+">AB+ (AB Positive)</option>
+                <option value="AB-">AB- (AB Negative)</option>
+                <option value="O+">O+ (O Positive)</option>
+                <option value="O-">O- (O Negative)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="filter-city">City or Area</label>
+              <input type="text" id="filter-city" class="form-control" placeholder="e.g. Delhi, Mumbai, Bangalore...">
+            </div>
+
+            <div class="form-group" style="justify-content: center; padding-bottom: 6px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="filter-available" style="width: 18px; height: 18px; accent-color: var(--primary);">
+                <span>Show Available Donors Only</span>
+              </label>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+              <button onclick="filterDonors()" class="btn btn-primary">
+                <span>🔍</span> Search Donors
+              </button>
+              <button onclick="resetDonorFilter()" class="btn btn-outline" title="Reset Filters">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 3.5rem; margin-bottom: 1rem;">
+          <div>
+            <span class="section-tag">Direct Contact Network</span>
+            <h2 class="section-title" style="margin-bottom: 0;">Verified Voluntary Donors</h2>
+          </div>
+          <a href="auth.html?mode=signup&role=donor" class="btn btn-outline-primary btn-sm">
+            + Register as Donor
+          </a>
+        </div>
+
+        <!-- Donors Grid -->
+        <div class="donors-grid" id="donors-grid">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Emergency Requests Section -->
+    <section class="section section-alt" id="requests-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Urgent Transfusions Needed</span>
+          <h2 class="section-title">Active Emergency Requests</h2>
+          <p class="section-description">
+            Patients in critical medical emergencies requiring immediate blood donation. Please connect directly if you or someone you know can help.
+          </p>
+          <div style="margin-top: 1.25rem;">
+            <button onclick="openModal('request-blood-modal')" class="btn btn-primary">
+              <span>🚨</span> Submit Urgent Blood Request
+            </button>
+          </div>
+        </div>
+
+        <div class="requests-grid" id="requests-grid">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Compatibility Matrix Section -->
+    <section class="section" id="compatibility-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Medical Compatibility Chart</span>
+          <h2 class="section-title">Blood Group Compatibility</h2>
+          <p class="section-description">
+            Select a blood type below to explore matching donors and recipients. Knowing your match can save precious time in emergencies.
+          </p>
+        </div>
+
+        <div class="matrix-container">
+          <div class="blood-selector-tabs">
+            <button class="blood-tab-btn active" data-blood="O-">O-</button>
+            <button class="blood-tab-btn" data-blood="O+">O+</button>
+            <button class="blood-tab-btn" data-blood="A-">A-</button>
+            <button class="blood-tab-btn" data-blood="A+">A+</button>
+            <button class="blood-tab-btn" data-blood="B-">B-</button>
+            <button class="blood-tab-btn" data-blood="B+">B+</button>
+            <button class="blood-tab-btn" data-blood="AB-">AB-</button>
+            <button class="blood-tab-btn" data-blood="AB+">AB+</button>
+          </div>
+
+          <div style="margin-bottom: 1.5rem; text-align: center;">
+            <h3 id="compat-selected-title" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">Blood Type: O-</h3>
+            <span id="compat-selected-badge" class="badge badge-danger" style="margin-top: 0.25rem; font-size: 0.85rem;">Universal Red Cell Donor</span>
+            <p id="compat-selected-summary" style="color: var(--slate-600); margin-top: 0.5rem; font-size: 0.95rem;">
+              O- can be safely given to ANY blood group in emergencies!
+            </p>
+          </div>
+
+          <div class="compatibility-display">
+            <div class="compat-column">
+              <h4><span>📤</span> Can Donate Blood To:</h4>
+              <div class="compat-tags-wrap" id="compat-give-grid">
+                <!-- Injected via app.js -->
+              </div>
+            </div>
+
+            <div class="compat-column">
+              <h4><span>📥</span> Can Receive Blood From:</h4>
+              <div class="compat-tags-wrap" id="compat-receive-grid">
+                <!-- Injected via app.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Donation Camps & Drives -->
+    <section class="section section-alt" id="camps-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Community Health Drives</span>
+          <h2 class="section-title">Upcoming Donation Camps</h2>
+          <p class="section-description">
+            Join hands with local health authorities, Rotary clubs, and hospitals. Walk in or reserve your spot today.
+          </p>
+        </div>
+
+        <div class="camps-grid" id="camps-grid">
+          <!-- Injected via app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Eligibility Quiz CTA -->
+    <section class="section">
+      <div class="container">
+        <div class="eligibility-banner">
+          <div>
+            <h2>Wondering if you can donate blood?</h2>
+            <p>
+              Most healthy adults between 18 and 65 years who weigh at least 50 kg can donate blood safely every 3 months. Take our quick 30-second assessment.
+            </p>
+            <button onclick="openModal('eligibility-modal')" class="btn btn-primary btn-lg">
+              <span>🩺</span> Start Quick Eligibility Check
+            </button>
+          </div>
+          <div style="text-align: center; font-size: 5rem;">
+            🩸✨
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modals -->
+
+  <!-- Emergency Blood Request Modal -->
+  <div class="modal-overlay" id="request-blood-modal">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="closeModal('request-blood-modal')">✕</button>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--dark); margin-bottom: 0.5rem;">
+        🚨 Post Emergency Blood Request
+      </h2>
+      <p style="font-size: 0.875rem; color: var(--slate-500); margin-bottom: 1.5rem;">
+        Broadcast requirement instantly to nearby registered donors and volunteer groups.
+      </p>
+
+      <form id="emergency-request-form" onsubmit="handleAddRequest(event)">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label>Patient Full Name *</label>
+          <input type="text" name="patientName" required class="form-control" placeholder="e.g. Ramesh Chandra">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label>Blood Group *</label>
+            <select name="bloodGroup" id="req-blood-group" required class="form-control">
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Units Needed *</label>
+            <input type="number" name="units" min="1" max="10" value="1" required class="form-control">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label>Hospital / Clinic Name *</label>
+            <input type="text" name="hospital" required class="form-control" placeholder="e.g. Apollo Hospital">
+          </div>
+
+          <div class="form-group">
+            <label>City *</label>
+            <input type="text" name="city" required class="form-control" placeholder="e.g. New Delhi">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label>Urgency Level *</label>
+            <select name="urgency" required class="form-control">
+              <option value="critical">🚨 Critical (Within 2-4 Hours)</option>
+              <option value="urgent">⚡ Urgent (Within 12 Hours)</option>
+              <option value="standard">Standard (Within 24-48 Hours)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Attendant / Contact Person *</label>
+            <input type="text" name="contactPerson" required class="form-control" placeholder="e.g. Dr. Verma / Family">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label>Emergency Phone Number *</label>
+          <input type="tel" name="phone" required class="form-control" placeholder="e.g. +91 98765 43210">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label>Clinical Reason / Case Details</label>
+          <textarea name="reason" id="req-reason" rows="2" class="form-control" placeholder="e.g. Scheduled open heart surgery / Dengue platelet transfusion"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">
+            Broadcast Request Now
+          </button>
+          <button type="button" onclick="closeModal('request-blood-modal')" class="btn btn-outline">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Eligibility Quiz Modal -->
+  <div class="modal-overlay" id="eligibility-modal">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="closeModal('eligibility-modal')">✕</button>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--dark); margin-bottom: 0.5rem;">
+        🩺 Donor Eligibility Questionnaire
+      </h2>
+      <p style="font-size: 0.875rem; color: var(--slate-500); margin-bottom: 1.5rem;">
+        Answer these basic clinical questions to see if you can donate blood right now.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="form-group">
+          <label>Your Age (Years)</label>
+          <input type="number" id="quiz-age" class="form-control" value="24" min="10" max="100">
+        </div>
+
+        <div class="form-group">
+          <label>Your Body Weight (Kg)</label>
+          <input type="number" id="quiz-weight" class="form-control" value="62" min="30" max="200">
+        </div>
+
+        <div class="form-group">
+          <label>Have you gotten a tattoo or piercing in the last 6 months?</label>
+          <select id="quiz-tattoo" class="form-control">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Have you undergone any major surgery in the last 6 months?</label>
+          <select id="quiz-surgery" class="form-control">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+
+        <button onclick="checkEligibility()" class="btn btn-primary" style="margin-top: 0.5rem;">
+          Check My Eligibility
+        </button>
+
+        <div id="eligibility-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Website & GitHub Links Modal -->
+  <div class="modal-overlay" id="share-links-modal">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="closeModal('share-links-modal')">✕</button>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--dark); margin-bottom: 0.5rem;">
+        🔗 Project & GitHub Links
+      </h2>
+      <p style="font-size: 0.875rem; color: var(--slate-500); margin-bottom: 1.5rem;">
+        Here are the links for this blood donation web application and its source code repository.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <!-- Live Website Link Box -->
+        <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+            <strong style="color: var(--dark); font-size: 0.95rem;">🌐 Website Live Link (Local & Demo)</strong>
+            <span class="badge badge-success">Active</span>
+          </div>
+          <p style="font-size: 0.825rem; color: var(--slate-500); margin-bottom: 0.75rem;">
+            Open in any browser or run with the local Python server:
+          </p>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" readonly id="link-web" class="form-control" value="http://localhost:8080" style="font-family: monospace; font-size: 0.85rem; background: white;">
+            <button onclick="copyToClipboard(document.getElementById('link-web').value, 'Website link')" class="btn btn-primary btn-sm">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- GitHub Repo Link Box -->
+        <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+            <strong style="color: var(--dark); font-size: 0.95rem;">🐙 GitHub Repository Link</strong>
+            <span class="badge badge-info">Git Ready</span>
+          </div>
+          <p style="font-size: 0.825rem; color: var(--slate-500); margin-bottom: 0.75rem;">
+            Source code repository configured for your GitHub account:
+          </p>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" readonly id="link-git" class="form-control" value="https://github.com/aryansingh98775-prog/blood-donation-system-" style="font-family: monospace; font-size: 0.85rem; background: white;">
+            <button onclick="copyToClipboard(document.getElementById('link-git').value, 'GitHub link')" class="btn btn-primary btn-sm">
+              Copy
+            </button>
+          </div>
+          <div style="margin-top: 0.75rem;">
+            <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="width: 100%;">
+              Open GitHub Repository ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h3><span>🩸</span> LifeFlow Blood Bank</h3>
+        <p>
+          Empowering communities and healthcare institutions through rapid, transparent, and voluntary blood donation matching.
+        </p>
+        <div style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+          <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="color: white; border-color: rgba(255,255,255,0.2);">
+            🐙 GitHub Project
+          </a>
+          <button onclick="openModal('share-links-modal')" class="btn btn-outline btn-sm" style="color: white; border-color: rgba(255,255,255,0.2);">
+            🔗 Share Links
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="#search-section">Search Donors</a></li>
+          <li><a href="#requests-section">Emergency Requests</a></li>
+          <li><a href="#compatibility-section">Blood Compatibility</a></li>
+          <li><a href="#camps-section">Upcoming Camps</a></li>
+          <li><a href="dashboard.html">Member Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Blood Groups</h4>
+        <ul class="footer-links">
+          <li><a href="#compatibility-section">O- (Universal Donor)</a></li>
+          <li><a href="#compatibility-section">AB+ (Universal Recipient)</a></li>
+          <li><a href="#compatibility-section">A+ / A- Rare Groups</a></li>
+          <li><a href="#compatibility-section">B+ / B- Common Groups</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Emergency Contact</h4>
+        <ul class="footer-links">
+          <li>📞 Emergency: 1800-11-4567</li>
+          <li>✉️ support@lifeflow.org</li>
+          <li>🏥 24x7 Ambulance Coordination</li>
+          <li>📍 New Delhi, India</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 LifeFlow Blood Donation Management System. Open Source & Voluntary.</p>
+      <div style="display: flex; gap: 1rem;">
+        <a href="https://github.com/aryansingh98775-prog/blood-donation-system-" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+        <a href="auth.html?mode=login">Sign In</a>
+        <a href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
